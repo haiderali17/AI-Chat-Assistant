@@ -1,0 +1,197 @@
+/* =====================================================
+   GLOBAL APP
+   ===================================================== */
+
+.stApp {
+    background: #0b0f17;
+    color: #f5f7fa;
+}
+
+
+/* =====================================================
+   MAIN CONTENT
+   ===================================================== */
+
+.main .block-container {
+    max-width: 1100px;
+    padding-top: 2rem;
+    padding-bottom: 7rem;
+}
+
+
+/* =====================================================
+   HERO
+   ===================================================== */
+
+.hero {
+    text-align: center;
+    padding: 45px 20px 35px;
+}
+
+.hero-title {
+    color: #ffffff !important;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+
+.hero-subtitle {
+    color: #b8c0cc !important;
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+
+/* =====================================================
+   SIDEBAR
+   ===================================================== */
+
+section[data-testid="stSidebar"] {
+    background: #10151f;
+}
+
+
+/* Sidebar headings and normal text */
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3,
+section[data-testid="stSidebar"] p {
+    color: #f5f7fa !important;
+}
+
+
+/* =====================================================
+   SIDEBAR CLEAR CHAT BUTTON
+   ===================================================== */
+
+section[data-testid="stSidebar"] .stButton > button {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 10px;
+    background: #f8fafc !important;
+    color: #111827 !important;
+    font-weight: 600;
+}
+
+
+/* Force Clear Chat text to stay dark */
+
+section[data-testid="stSidebar"] .stButton > button * {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+}
+
+
+/* =====================================================
+   SIDEBAR DOWNLOAD BUTTONS
+   ===================================================== */
+
+section[data-testid="stSidebar"] .stDownloadButton > button {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 10px;
+    background: #f8fafc !important;
+    color: #111827 !important;
+    font-weight: 600;
+}
+
+
+/* Force Download button text and icons to stay dark */
+
+section[data-testid="stSidebar"] .stDownloadButton > button * {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+}
+
+
+/* =====================================================
+   GENERAL BUTTONS
+   ===================================================== */
+
+.stButton > button {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   CHAT MESSAGES
+   ===================================================== */
+
+.stChatMessage {
+    background: transparent !important;
+}
+
+.stChatMessage p,
+.stChatMessage li {
+    color: #f1f5f9 !important;
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.stChatMessage h1,
+.stChatMessage h2,
+.stChatMessage h3,
+.stChatMessage h4 {
+    color: #ffffff !important;
+}
+
+
+/* =====================================================
+   CHAT INPUT
+   ===================================================== */
+
+[data-testid="stBottom"] {
+    background: #0b0f17 !important;
+}
+
+.stChatInput {
+    padding-bottom: 20px;
+}
+
+
+/* User typed text */
+
+.stChatInput textarea {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+}
+
+
+/* Placeholder */
+
+.stChatInput textarea::placeholder {
+    color: #64748b !important;
+    opacity: 1;
+}
+
+
+/* =====================================================
+   MARKDOWN
+   ===================================================== */
+
+.stMarkdown {
+    color: #f1f5f9;
+}
+
+
+/* =====================================================
+   CODE BLOCKS
+   ===================================================== */
+
+.stCodeBlock {
+    border-radius: 10px;
+}
+
+
+/* =====================================================
+   DIVIDERS
+   ===================================================== */
+
+hr {
+    border-color: #252c38 !important;
+}

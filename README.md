@@ -1,4 +1,8 @@
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/haiderali17/AI-Chat-Assistant)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-FF4B4B?logo=streamlit)](https://ai-chat-assistant-gvpxe6yyaatyqiua8apmuz.streamlit.app/)
+
 # 🤖 AI Chat Assistant
+
 
 An AI-powered conversational assistant built with **Python, Streamlit, and Groq API**.
 
@@ -443,23 +447,6 @@ Possible future improvements include:
 
 ---
 
-## 📌 Project Status
-
-**Version 2 — Completed**
-
-This project was built as a practical AI engineering project to explore:
-
-- LLM API integration
-- Prompt engineering
-- Streaming responses
-- Session state
-- Configurable AI behavior
-- JSON serialization
-- PDF generation
-- Modular architecture
-- Software engineering principles
-
----
 
 ## 👨‍💻 Author
 

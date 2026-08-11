@@ -1,9 +1,14 @@
 """
 Main application entry point for the AI Chat Assistant.
 
-This module handles the Streamlit user interface, session state,
-chat history, sidebar controls, conversation export, and
-interaction with the Groq service.
+This module handles:
+- Streamlit user interface
+- Session state
+- AI personality selection
+- Chat interaction
+- Streaming responses
+- Conversation export
+- Application flow
 """
 
 import json
@@ -46,7 +51,9 @@ pdf_generator = PDFGenerator()
 # =====================================================
 
 def load_css():
-    """Load the application's custom CSS file."""
+    """
+    Load the application's custom CSS file.
+    """
 
     with open(
         "styles/style.css",
@@ -65,9 +72,15 @@ def load_css():
 # =====================================================
 
 def initialize_session_state():
-    """Initialize application session state."""
+    """
+    Initialize Streamlit session state.
+
+    Conversation messages are stored in session state
+    so they remain available during the current session.
+    """
 
     if "messages" not in st.session_state:
+
         st.session_state.messages = []
 
 
@@ -76,7 +89,13 @@ def initialize_session_state():
 # =====================================================
 
 def create_text_export():
-    """Create a readable text representation of the conversation."""
+    """
+    Create a text representation of the conversation.
+
+    Returns:
+        str:
+            Conversation formatted as readable text.
+    """
 
     lines = []
 
@@ -97,7 +116,13 @@ def create_text_export():
 # =====================================================
 
 def create_json_export():
-    """Create a JSON representation of the conversation."""
+    """
+    Create a JSON representation of the conversation.
+
+    Returns:
+        str:
+            Conversation serialized as JSON.
+    """
 
     return json.dumps(
         st.session_state.messages,
@@ -111,7 +136,13 @@ def create_json_export():
 # =====================================================
 
 def create_pdf_export():
-    """Generate a PDF from the current conversation."""
+    """
+    Generate a PDF from the current conversation.
+
+    Returns:
+        bytes:
+            Generated PDF data.
+    """
 
     return pdf_generator.generate_conversation_pdf(
         st.session_state.messages
@@ -124,17 +155,20 @@ def create_pdf_export():
 
 def render_sidebar_controls():
     """
-    Render sidebar settings and return selected values.
+    Render sidebar configuration controls.
 
     Returns:
-        tuple: Personality, model, and temperature.
+        tuple:
+            Selected personality, model, and temperature.
     """
 
     with st.sidebar:
 
         st.title("🤖 AI Chat Assistant")
 
-        st.caption("Powered by Groq")
+        st.caption(
+            "Powered by Groq"
+        )
 
         st.divider()
 
@@ -144,7 +178,9 @@ def render_sidebar_controls():
 
         selected_personality = st.selectbox(
             "🧠 AI Personality",
-            options=list(AI_PERSONALITIES.keys())
+            options=list(
+                AI_PERSONALITIES.keys()
+            )
         )
 
         # -------------------------------------------------
@@ -178,78 +214,26 @@ def render_sidebar_controls():
 
 
 # =====================================================
-# EXPORT SECTION
-# =====================================================
-
-def render_export_section():
-    """Render conversation export controls."""
-
-    with st.sidebar:
-
-        st.subheader("💾 Export Conversation")
-
-        st.download_button(
-            label="📄 Download TXT",
-            data=create_text_export(),
-            file_name="chat_conversation.txt",
-            mime="text/plain",
-            use_container_width=True,
-            on_click="ignore"
-        )
-
-        st.download_button(
-            label="📦 Download JSON",
-            data=create_json_export(),
-            file_name="chat_conversation.json",
-            mime="application/json",
-            use_container_width=True
-        )
-
-        st.download_button(
-            label="📑 Download PDF",
-            data=create_pdf_export(),
-            file_name="chat_conversation.pdf",
-            mime="application/pdf",
-            use_container_width=True,
-            on_click="ignore"
-        )
-
-        st.divider()
-
-        # -------------------------------------------------
-        # CLEAR CHAT
-        # -------------------------------------------------
-
-        if st.button(
-            "🗑️ Clear Chat",
-            use_container_width=True
-        ):
-
-            st.session_state.messages = []
-
-            logger.info(
-                "Chat history cleared."
-            )
-
-            st.rerun()
-
-
-# =====================================================
 # HERO
 # =====================================================
 
 def render_hero():
-    """Render the application's hero section."""
+    """
+    Render the application's hero section.
+    """
 
     st.markdown(
         """
-<div class="hero">
-<div class="hero-title">🤖 AI Chat Assistant</div>
-<div class="hero-subtitle">
-Your intelligent AI companion powered by Groq.
-</div>
-</div>
-""",
+        <div class="hero">
+            <div class="hero-title">
+                🤖 AI Chat Assistant
+            </div>
+
+            <div class="hero-subtitle">
+                Your intelligent AI companion powered by Groq.
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
@@ -259,7 +243,9 @@ Your intelligent AI companion powered by Groq.
 # =====================================================
 
 def render_chat_history():
-    """Display previous messages from the conversation."""
+    """
+    Display previous messages from the current conversation.
+    """
 
     for message in st.session_state.messages:
 
@@ -285,9 +271,14 @@ def handle_chat(
     Handle user input and generate a streaming AI response.
 
     Args:
-        system_prompt (str): Instructions defining AI behavior.
-        model (str): Selected Groq model.
-        temperature (float): Response variability.
+        system_prompt (str):
+            Instructions defining AI behavior.
+
+        model (str):
+            Selected Groq model.
+
+        temperature (float):
+            Controls response variability.
     """
 
     prompt = st.chat_input(
@@ -321,32 +312,24 @@ def handle_chat(
     )
 
     # =================================================
-    # GENERATE AI RESPONSE
+    # GENERATE STREAMING RESPONSE
     # =================================================
 
     try:
 
-        response_stream = (
-            groq_service.stream_response(
-                messages=st.session_state.messages,
-                system_prompt=system_prompt,
-                model=model,
-                temperature=temperature
-            )
-        )
-
-        # =================================================
-        # DISPLAY STREAMING RESPONSE
-        # =================================================
-
         with st.chat_message("assistant"):
 
             response = st.write_stream(
-                response_stream
+                groq_service.stream_response(
+                    messages=st.session_state.messages,
+                    system_prompt=system_prompt,
+                    model=model,
+                    temperature=temperature
+                )
             )
 
         # =================================================
-        # SAVE AI RESPONSE
+        # SAVE COMPLETE RESPONSE
         # =================================================
 
         st.session_state.messages.append(
@@ -357,34 +340,114 @@ def handle_chat(
         )
 
         logger.info(
-            "AI response generated successfully."
+            "AI streaming response completed successfully."
         )
 
-    except Exception as e:
+    except Exception as error:
 
         logger.error(
-            f"Groq API request failed: {e}"
+            f"Groq API request failed: {error}"
         )
 
         st.error(
-            "❌ Sorry, something went wrong while "
-            "generating the response."
+            "❌ Something went wrong while generating "
+            "the AI response."
         )
 
 
 # =====================================================
-# MAIN
+# EXPORT SECTION
+# =====================================================
+
+def render_export_section():
+    """
+    Render conversation export controls and clear chat.
+    """
+
+    with st.sidebar:
+
+        st.subheader(
+            "💾 Export Conversation"
+        )
+
+        # -------------------------------------------------
+        # TXT
+        # -------------------------------------------------
+
+        st.download_button(
+            label="📄 Download TXT",
+            data=create_text_export(),
+            file_name="chat_conversation.txt",
+            mime="text/plain",
+            use_container_width=True,
+            on_click="ignore"
+        )
+
+        # -------------------------------------------------
+        # JSON
+        # -------------------------------------------------
+
+        st.download_button(
+            label="📦 Download JSON",
+            data=create_json_export(),
+            file_name="chat_conversation.json",
+            mime="application/json",
+            use_container_width=True,
+            on_click="ignore"
+        )
+
+        # -------------------------------------------------
+        # PDF
+        # -------------------------------------------------
+
+        st.download_button(
+            label="📑 Download PDF",
+            data=create_pdf_export(),
+            file_name="chat_conversation.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+            on_click="ignore"
+        )
+
+        st.divider()
+
+        # -------------------------------------------------
+        # CLEAR CHAT
+        # -------------------------------------------------
+
+        if st.button(
+            "🗑️ Clear Chat",
+            use_container_width=True
+        ):
+
+            st.session_state.messages = []
+
+            logger.info(
+                "Chat history cleared."
+            )
+
+            st.rerun()
+
+
+# =====================================================
+# MAIN APPLICATION
 # =====================================================
 
 def main():
-    """Run the AI Chat Assistant application."""
+    """
+    Run the AI Chat Assistant application.
+    """
+
+    # -------------------------------------------------
+    # INITIALIZATION
+    # -------------------------------------------------
 
     load_css()
 
     initialize_session_state()
 
     # -------------------------------------------------
-    # SIDEBAR SETTINGS FIRST
+    # SIDEBAR CONTROLS
     # -------------------------------------------------
 
     (
@@ -394,10 +457,14 @@ def main():
     ) = render_sidebar_controls()
 
     # -------------------------------------------------
-    # MAIN UI
+    # HERO
     # -------------------------------------------------
 
     render_hero()
+
+    # -------------------------------------------------
+    # EXISTING CHAT HISTORY
+    # -------------------------------------------------
 
     render_chat_history()
 
@@ -410,7 +477,7 @@ def main():
     ]
 
     # -------------------------------------------------
-    # HANDLE CHAT
+    # HANDLE NEW CHAT
     # -------------------------------------------------
 
     handle_chat(
@@ -420,7 +487,7 @@ def main():
     )
 
     # -------------------------------------------------
-    # EXPORT SECTION LAST
+    # EXPORT SECTION
     # -------------------------------------------------
 
     render_export_section()

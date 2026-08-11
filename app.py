@@ -225,10 +225,7 @@ def render_hero():
     st.markdown(
         """
         <div class="hero">
-            <div class="hero-title">
-                🤖 AI Chat Assistant
-            </div>
-
+            <div class="hero-title">🤖 AI Chat Assistant</div>
             <div class="hero-subtitle">
                 Your intelligent AI companion powered by Groq.
             </div>

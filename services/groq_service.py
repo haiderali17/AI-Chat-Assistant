@@ -11,8 +11,8 @@ to maintain separation of concerns and improve reusability.
 """
 
 from groq import Groq
-
 from config import GROQ_API_KEY
+import time
 
 
 class GroqService:
@@ -82,8 +82,9 @@ class GroqService:
         # =================================================
 
         for chunk in response:
-
             content = chunk.choices[0].delta.content
 
+
             if content:
-                yield content
+                      yield content
+                      time.sleep(0.015)

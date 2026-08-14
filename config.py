@@ -28,12 +28,12 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # MODEL CONFIGURATION
 # =====================================================
 
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "openai/gpt-oss-120b"
 
 TEMPERATURE = 0.2
 
 AVAILABLE_MODELS = [
-    "llama-3.3-70b-versatile"
+    "openai/gpt-oss-120b",
 ]
 
 

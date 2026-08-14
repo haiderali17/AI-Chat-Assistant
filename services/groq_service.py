@@ -87,4 +87,4 @@ class GroqService:
 
             if content:
                       yield content
-                      time.sleep(0.015)
+                      time.sleep(0.01)

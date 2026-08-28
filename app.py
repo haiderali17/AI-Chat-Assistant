@@ -51,9 +51,7 @@ pdf_generator = PDFGenerator()
 # =====================================================
 
 def load_css():
-    """
-    Load the application's custom CSS file.
-    """
+    """Load the application's custom CSS file."""
 
     with open(
         "styles/style.css",
@@ -72,12 +70,7 @@ def load_css():
 # =====================================================
 
 def initialize_session_state():
-    """
-    Initialize Streamlit session state.
-
-    Conversation messages are stored in session state
-    so they remain available during the current session.
-    """
+    """Initialize Streamlit session state."""
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -88,13 +81,7 @@ def initialize_session_state():
 # =====================================================
 
 def create_text_export():
-    """
-    Create a text representation of the conversation.
-
-    Returns:
-        str:
-            Conversation formatted as readable text.
-    """
+    """Create a text representation of the conversation."""
 
     lines = []
 
@@ -115,13 +102,7 @@ def create_text_export():
 # =====================================================
 
 def create_json_export():
-    """
-    Create a JSON representation of the conversation.
-
-    Returns:
-        str:
-            Conversation serialized as JSON.
-    """
+    """Create a JSON representation of the conversation."""
 
     return json.dumps(
         st.session_state.messages,
@@ -135,13 +116,7 @@ def create_json_export():
 # =====================================================
 
 def create_pdf_export():
-    """
-    Generate a PDF from the current conversation.
-
-    Returns:
-        bytes:
-            Generated PDF data.
-    """
+    """Generate a PDF from the current conversation."""
 
     return pdf_generator.generate_conversation_pdf(
         st.session_state.messages
@@ -153,13 +128,7 @@ def create_pdf_export():
 # =====================================================
 
 def render_sidebar_controls():
-    """
-    Render sidebar configuration controls.
-
-    Returns:
-        tuple:
-            Selected personality, model, and temperature.
-    """
+    """Render sidebar configuration controls."""
 
     with st.sidebar:
 
@@ -171,10 +140,7 @@ def render_sidebar_controls():
 
         st.divider()
 
-        # -------------------------------------------------
         # AI PERSONALITY
-        # -------------------------------------------------
-
         selected_personality = st.selectbox(
             "🧠 AI Personality",
             options=list(
@@ -182,19 +148,13 @@ def render_sidebar_controls():
             )
         )
 
-        # -------------------------------------------------
         # MODEL
-        # -------------------------------------------------
-
         selected_model = st.selectbox(
             "⚙️ Model",
             options=AVAILABLE_MODELS
         )
 
-        # -------------------------------------------------
         # TEMPERATURE
-        # -------------------------------------------------
-
         selected_temperature = st.slider(
             "🌡️ Temperature",
             min_value=0.0,
@@ -217,9 +177,7 @@ def render_sidebar_controls():
 # =====================================================
 
 def render_hero():
-    """
-    Render the application's hero section.
-    """
+    """Render the application's hero section."""
 
     st.markdown(
         """
@@ -239,9 +197,7 @@ def render_hero():
 # =====================================================
 
 def render_chat_history():
-    """
-    Display previous messages from the current conversation.
-    """
+    """Display previous messages."""
 
     for message in st.session_state.messages:
 
@@ -263,19 +219,7 @@ def handle_chat(
     model,
     temperature
 ):
-    """
-    Handle user input and generate a streaming AI response.
-
-    Args:
-        system_prompt (str):
-            Instructions defining AI behavior.
-
-        model (str):
-            Selected Groq model.
-
-        temperature (float):
-            Controls response variability.
-    """
+    """Handle user input and generate AI response."""
 
     prompt = st.chat_input(
         "Message AI Chat Assistant..."
@@ -288,13 +232,11 @@ def handle_chat(
     # SAVE USER MESSAGE
     # =================================================
 
-    user_message = {
-        "role": "user",
-        "content": prompt
-    }
-
     st.session_state.messages.append(
-        user_message
+        {
+            "role": "user",
+            "content": prompt
+        }
     )
 
     # =================================================
@@ -309,23 +251,6 @@ def handle_chat(
     )
 
     # =================================================
-    # LIMIT API HISTORY
-    # =================================================
-
-    MAX_HISTORY_MESSAGES = 20
-
-    conversation_for_api = (
-        st.session_state.messages[
-            -MAX_HISTORY_MESSAGES:
-        ]
-    )
-
-    logger.info(
-        "Preparing Groq request with "
-        f"{len(conversation_for_api)} history messages."
-    )
-
-    # =================================================
     # GENERATE STREAMING RESPONSE
     # =================================================
 
@@ -335,7 +260,7 @@ def handle_chat(
 
             response = st.write_stream(
                 groq_service.stream_response(
-                    messages=conversation_for_api,
+                    messages=st.session_state.messages,
                     system_prompt=system_prompt,
                     model=model,
                     temperature=temperature
@@ -373,10 +298,8 @@ def handle_chat(
             "AI response generation failed."
         )
 
-        # -------------------------------------------------
-        # REMOVE USER MESSAGE IF REQUEST FAILED
-        # -------------------------------------------------
-
+        # Remove failed user message
+        # so history stays clean.
         if (
             st.session_state.messages
             and st.session_state.messages[-1]["role"] == "user"
@@ -384,10 +307,7 @@ def handle_chat(
         ):
             st.session_state.messages.pop()
 
-        # -------------------------------------------------
-        # SHOW ACTUAL ERROR
-        # -------------------------------------------------
-
+        # Show the actual error.
         st.error(
             f"❌ AI request failed: {error}"
         )
@@ -398,9 +318,7 @@ def handle_chat(
 # =====================================================
 
 def render_export_section():
-    """
-    Render conversation export controls and clear chat.
-    """
+    """Render conversation export controls."""
 
     with st.sidebar:
 
@@ -408,10 +326,7 @@ def render_export_section():
             "💾 Export Conversation"
         )
 
-        # -------------------------------------------------
         # TXT
-        # -------------------------------------------------
-
         st.download_button(
             label="📄 Download TXT",
             data=create_text_export(),
@@ -421,10 +336,7 @@ def render_export_section():
             on_click="ignore"
         )
 
-        # -------------------------------------------------
         # JSON
-        # -------------------------------------------------
-
         st.download_button(
             label="📦 Download JSON",
             data=create_json_export(),
@@ -434,10 +346,7 @@ def render_export_section():
             on_click="ignore"
         )
 
-        # -------------------------------------------------
         # PDF
-        # -------------------------------------------------
-
         st.download_button(
             label="📑 Download PDF",
             data=create_pdf_export(),
@@ -449,10 +358,7 @@ def render_export_section():
 
         st.divider()
 
-        # -------------------------------------------------
         # CLEAR CHAT
-        # -------------------------------------------------
-
         if st.button(
             "🗑️ Clear Chat",
             use_container_width=True
@@ -472,62 +378,40 @@ def render_export_section():
 # =====================================================
 
 def main():
-    """
-    Run the AI Chat Assistant application.
-    """
+    """Run the AI Chat Assistant application."""
 
-    # -------------------------------------------------
-    # INITIALIZATION
-    # -------------------------------------------------
-
+    # Load CSS
     load_css()
 
+    # Initialize session
     initialize_session_state()
 
-    # -------------------------------------------------
-    # SIDEBAR CONTROLS
-    # -------------------------------------------------
-
+    # Sidebar
     (
         selected_personality,
         selected_model,
         selected_temperature
     ) = render_sidebar_controls()
 
-    # -------------------------------------------------
-    # HERO
-    # -------------------------------------------------
-
+    # Hero
     render_hero()
 
-    # -------------------------------------------------
-    # EXISTING CHAT HISTORY
-    # -------------------------------------------------
-
+    # Previous messages
     render_chat_history()
 
-    # -------------------------------------------------
-    # SYSTEM PROMPT
-    # -------------------------------------------------
-
+    # System prompt
     system_prompt = AI_PERSONALITIES[
         selected_personality
     ]
 
-    # -------------------------------------------------
-    # HANDLE NEW CHAT
-    # -------------------------------------------------
-
+    # New chat
     handle_chat(
         system_prompt=system_prompt,
         model=selected_model,
         temperature=selected_temperature
     )
 
-    # -------------------------------------------------
-    # EXPORT SECTION
-    # -------------------------------------------------
-
+    # Export
     render_export_section()
 
 

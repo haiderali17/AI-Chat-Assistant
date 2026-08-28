@@ -80,7 +80,6 @@ def initialize_session_state():
     """
 
     if "messages" not in st.session_state:
-
         st.session_state.messages = []
 
 
@@ -289,11 +288,13 @@ def handle_chat(
     # SAVE USER MESSAGE
     # =================================================
 
+    user_message = {
+        "role": "user",
+        "content": prompt
+    }
+
     st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": prompt
-        }
+        user_message
     )
 
     # =================================================
@@ -301,11 +302,27 @@ def handle_chat(
     # =================================================
 
     with st.chat_message("user"):
-
         st.markdown(prompt)
 
     logger.info(
         "User message received."
+    )
+
+    # =================================================
+    # LIMIT API HISTORY
+    # =================================================
+
+    MAX_HISTORY_MESSAGES = 20
+
+    conversation_for_api = (
+        st.session_state.messages[
+            -MAX_HISTORY_MESSAGES:
+        ]
+    )
+
+    logger.info(
+        "Preparing Groq request with "
+        f"{len(conversation_for_api)} history messages."
     )
 
     # =================================================
@@ -318,11 +335,21 @@ def handle_chat(
 
             response = st.write_stream(
                 groq_service.stream_response(
-                    messages=st.session_state.messages,
+                    messages=conversation_for_api,
                     system_prompt=system_prompt,
                     model=model,
                     temperature=temperature
                 )
+            )
+
+        # =================================================
+        # VALIDATE RESPONSE
+        # =================================================
+
+        if not response:
+
+            raise ValueError(
+                "The AI returned an empty response."
             )
 
         # =================================================
@@ -342,13 +369,27 @@ def handle_chat(
 
     except Exception as error:
 
-        logger.error(
-            f"Groq API request failed: {error}"
+        logger.exception(
+            "AI response generation failed."
         )
 
+        # -------------------------------------------------
+        # REMOVE USER MESSAGE IF REQUEST FAILED
+        # -------------------------------------------------
+
+        if (
+            st.session_state.messages
+            and st.session_state.messages[-1]["role"] == "user"
+            and st.session_state.messages[-1]["content"] == prompt
+        ):
+            st.session_state.messages.pop()
+
+        # -------------------------------------------------
+        # SHOW ACTUAL ERROR
+        # -------------------------------------------------
+
         st.error(
-            "❌ Something went wrong while generating "
-            "the AI response."
+            f"❌ AI request failed: {error}"
         )
 
 
